@@ -8,7 +8,7 @@ public class VisionLogic : MonoBehaviour
     // Use this for initialization
     public GameObject[] modelArray = new GameObject[3];
     private int modelNumber;
-    public string identity = "";
+    public string identity = "Werewolf";
 
     void Start()
     {
@@ -45,7 +45,7 @@ public class VisionLogic : MonoBehaviour
 
 
         }
-        //ModelSwitch();
+        ModelSwitch();
 
         /*
         for (int x = 0; x < modelArray.Length; x++)

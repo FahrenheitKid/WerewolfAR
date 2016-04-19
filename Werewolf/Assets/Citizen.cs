@@ -19,9 +19,12 @@ public class Citizen : MonoBehaviour {
 
         for (int x = 0; x < modelArray.Length; x++)
         {
+            //Transform temp;
             if (x == 0)
             {
-                modelArray[x] = GameObject.Find("Werewolf");
+                
+                //temp =
+                modelArray[x] = this.gameObject.transform.Find("Werewolf").gameObject;
                 if (identity == "Werewolf")
                 {
                     team = "Werewolves";
@@ -33,7 +36,7 @@ public class Citizen : MonoBehaviour {
 
             if (x == 1)
             {
-                modelArray[x] = GameObject.Find("Seer");
+                modelArray[x] = this.gameObject.transform.Find("Seer").gameObject;
                 if (identity == "Seer")
                 {
                     team = "Villagers";
@@ -45,7 +48,7 @@ public class Citizen : MonoBehaviour {
 
             if (x == 2)
             {
-                modelArray[x] = GameObject.Find("Villager");
+                modelArray[x] = this.gameObject.transform.Find("Villager").gameObject;
                 if (identity == "Villager")
                 {
                     team = "Villagers";
