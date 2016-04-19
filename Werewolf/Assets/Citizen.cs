@@ -60,7 +60,7 @@ public class Citizen : MonoBehaviour {
 
 
         }
-        //ModelSwitch();
+        ModelSwitch();
 
         /*
         for (int x = 0; x < modelArray.Length; x++)

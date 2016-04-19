@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using Vuforia;
 
 
 public class GameManager : MonoBehaviour
@@ -98,6 +98,7 @@ public class GameManager : MonoBehaviour
         seer = true;
 
         initGame();
+        initTargets();
 
     }
 
@@ -212,5 +213,83 @@ public class GameManager : MonoBehaviour
 
         }
 
+    }
+
+    void initTargets()
+    {
+
+        {
+
+            if (DataSet.Exists("WerewolfAR"))
+            {
+                Debug.Log("dataset werewlf exists ");
+            }
+            else Debug.Log("dataset werewlf dont exist ");
+
+            IEnumerable<TrackableBehaviour> trackableBehaviours = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
+            Debug.Log("number of trackables: " + System.Linq.Enumerable.Count(trackableBehaviours));
+
+            int i = 0;
+            // Loop over all TrackableBehaviours.
+            foreach (TrackableBehaviour trackableBehaviour in trackableBehaviours)
+            {
+                string name = trackableBehaviour.TrackableName;
+                Debug.Log("loading Trackable: " + name);
+
+
+                if (i < players.Count)
+                {
+
+                    trackableBehaviour.gameObject.transform.name = "ImageTarget " + (i + 1);
+                    for (int j = 0; j < players.Count; j++)
+                    {
+
+                        //  Debug.Log("<color=yellow>player name: " + players[i].name + "</color>");
+                        //Debug.Log("<color=blue>player da vez: Player " + (j + 1)  + "</color>");
+                        //Debug.Log("Trackable name: " + name);
+                        string nametemp = "Player " + (i + 1);
+                        if (players[j].name == nametemp)
+                        {
+                            Debug.Log("<color=yellow> criando player: " + (i +1) + "</color>");
+                            players[j].transform.SetParent(trackableBehaviour.gameObject.transform);
+
+                        }
+
+
+                    }
+
+                    //trackableBehaviour.gameObject.transform.parent = players[i].transform;
+                    /*
+                    // chips target detected for the first time
+                    // augmentation object has not yet been created for this target
+                    // let's create it
+                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    // attach cube under target
+                    cube.transform.parent = trackableBehaviour.transform;
+
+                    // Add a Trackable event handler to the Trackable.
+                    // This Behaviour handles Trackable lost/found callbacks.
+                    trackableBehaviour.gameObject.AddComponent<DefaultTrackableEventHandler>();
+
+                    // set local transformation (i.e. relative to the parent target)
+                    cube.transform.localPosition = new Vector3(0, 0.2f, 0);
+                    cube.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    cube.transform.localRotation = Quaternion.identity;
+                    cube.gameObject.SetActive(true);
+
+                    // mChipsObjectCreated = true;
+                    */
+                }
+                i++;
+
+            }
+        }
+    }
+
+
+    void OnGUI()
+    {
+        Rect rect = new Rect(0, 0, Screen.width, Screen.height);
+        GUI.Label(rect, "Here is a block of text\nlalalala\nanother line\nI could do this all day!");
     }
 }

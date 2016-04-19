@@ -10,19 +10,31 @@ public class DynamicTargets : MonoBehaviour
 
 
     // Update is called once per frame
-    void Update()
+    void Start()
     {
-        IEnumerable<TrackableBehaviour> trackableBehaviours = TrackerManager.Instance.GetStateManager().GetActiveTrackableBehaviours();
 
+        if (DataSet.Exists("WerewolfAR"))
+        {
+            Debug.Log("dataset werewlf exists ");
+        }
+        else Debug.Log("dataset werewlf dont exist ");
+
+        IEnumerable<TrackableBehaviour> trackableBehaviours = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
+        Debug.Log("Trackable n: " + System.Linq.Enumerable.Count(trackableBehaviours));
+
+        int i = 0;
         // Loop over all TrackableBehaviours.
         foreach (TrackableBehaviour trackableBehaviour in trackableBehaviours)
         {
             string name = trackableBehaviour.TrackableName;
             Debug.Log("Trackable name: " + name);
 
-            /*
-            if (name.Equals("Player1") && !mChipsObjectCreated)
+           
+            if (!name.Equals("wolf") || !name.Equals("qrCode"))
             {
+
+                trackableBehaviour.gameObject.name = "Player " + (i + 1);
+
                 // chips target detected for the first time
                 // augmentation object has not yet been created for this target
                 // let's create it
@@ -40,9 +52,10 @@ public class DynamicTargets : MonoBehaviour
                 cube.transform.localRotation = Quaternion.identity;
                 cube.gameObject.SetActive(true);
 
-                mChipsObjectCreated = true;
+               // mChipsObjectCreated = true;
             }
-            */
+            i++;
+            
         }
     }
 }

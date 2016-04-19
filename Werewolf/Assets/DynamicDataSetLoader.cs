@@ -9,7 +9,7 @@ public class DynamicDataSetLoader : MonoBehaviour
 {
     // specify these in Unity Inspector
     public GameObject augmentationObject = GameObject.Find("Cubinho");  // you can use teapot or other object
-    public string dataSetName = "Assets/StreamingAssets/QCAR/device_db";  //  Assets/StreamingAssets/QCAR/DataSetName
+    public string dataSetName = "Assets/StreamingAssets/QCAR/WerewolfAR.xml";  //  Assets/StreamingAssets/QCAR/DataSetName
     public string dataSetName1 = "C:/Users/beepc/Documents/GitHub/WerewolfAR/Werewolf/Assets/StreamingAssets/QCAR/device_db.xml";
     // Use this for initialization
     void Start()
@@ -31,7 +31,7 @@ public class DynamicDataSetLoader : MonoBehaviour
 
         DataSet dataSet = objectTracker.CreateDataSet();
         
-        if (dataSet.Load(dataSetName1, VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
+        if (dataSet.Load(dataSetName))
         {
 
             objectTracker.Stop();  // stop tracker so that we can add new dataset
