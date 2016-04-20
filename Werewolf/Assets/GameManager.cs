@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
         public int little_girl; // no começo do jogo, sabe a identidade de todos os werewolfs
         public int witch;
 
+       
+
         public  void init(int vil, int wer)
         {
 
@@ -69,16 +71,22 @@ public class GameManager : MonoBehaviour
     public float n_werewolfs1; // um terço do numero de players
     public int n_villagers;
     public int n_players;
+    public int n_players_alive;
     public int n_werewolfs; // um terço do numero de players
     public counts qts;
     Citizen script;
 
+    public string whosturn;
     public bool seer = false; // seleciona um jogador e descobre sua identidade
     public bool hunter = false; // quando linchado, o jogador que ele votou morre também
     public bool shaman = false; // pode descobrir a identidade de um jogador morto
     public bool cupid = false; // seleciona dois players para serem "amantes" quando um morre, o outro morre junto
     public bool little_girl = false; // no começo do jogo, sabe a identidade de todos os werewolfs
     public bool witch = false;
+
+
+    public bool night = true;
+    public int player_turn;
 
 
     List<GameObject> players = new List<GameObject>();
@@ -105,7 +113,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        night = false;
         int teamV = 0;
         int teamW = 0;
         
@@ -140,13 +148,70 @@ public class GameManager : MonoBehaviour
         }
 
 
+        bool keepGo = false;
+        int turn = 1;
+        if (night)
+        {
+
+            GameObject plist = GameObject.Find("PlayersList"); // lista de player
+            for (int i = 0; i < plist.transform.childCount; i++)
+            {
+                GameObject p;
+                Citizen.player_info temp = new Citizen.player_info();
+                Citizen s;
+                p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
+                s = p.GetComponent<Citizen>(); // player X's script
+
+                if (!s.alive) continue;
+
+                whosturn = p.name + " Turn";
+
+                if (turn == 1)
+                {
+                    for (int j = 0; j < plist.transform.childCount; j++)
+                    {
+
+                        GameObject pl;
+                        pl = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player Y
+                        Citizen sl;
+                        sl = pl.GetComponent<Citizen>(); // player X's script
+
+                        if (pl.name == p.name) continue;
+
+                        for (int k = 0; k < s.players_info.Count; k++)
+                        {
+
+                            if (s.players_info[k].player_name == pl.name)
+                            {
+                                sl.ModelSwitch(s.players_info[k].player_identity);
+                            }
+                        }
+
+
+                    }
+
+
+                }
+
+                   
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                    //ModelSwitch("Villager");
+
+                    turn++;
+                    }
+
+              
+                
+            }
 
         }
+    }
 
     void initGame()
     {
 
-       
+        n_players_alive = n_players;
 
         qts.init(n_villagers, n_werewolfs);
         n_villagers = qts.getVillagers();
@@ -181,11 +246,13 @@ public class GameManager : MonoBehaviour
             go.name = "Player " + (listap[i] + 1);
             script = go.GetComponent<Citizen>();
 
+           // Debug.Log("qtd were= " + qts.werewolfs + " | n_were = " + n_werewolfs);
             if (qts.werewolfs < n_werewolfs)
             {
 
                 
                 script.identity = "Werewolf";
+                
                 players.Add(go);
                 Debug.Log("entrei lobo");
                 qts.werewolfs++;
@@ -196,6 +263,18 @@ public class GameManager : MonoBehaviour
             if(qts.villagers < n_villagers)
             {
                 script.identity = "Villager";
+                for(int j = 0; j < go.transform.childCount; j++)
+                {
+                    if(go.transform.GetChild(j).gameObject.name == script.identity)
+                    {
+                        Debug.Log("Entrei no player right");
+                        go.transform.GetChild(j).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        go.transform.GetChild(j).gameObject.SetActive(false);
+                    }
+                }
                 players.Add(go);
                 Debug.Log("entrei vila");
                 qts.villagers++;
@@ -206,7 +285,7 @@ public class GameManager : MonoBehaviour
             {
                 script.identity = "Seer";
                 players.Add(go);
-
+                Debug.Log("entrei seer");
                 qts.seer++;
                 continue;
             }
@@ -241,6 +320,8 @@ public class GameManager : MonoBehaviour
                 {
 
                     trackableBehaviour.gameObject.transform.name = "ImageTarget " + (i + 1);
+                    
+                    trackableBehaviour.gameObject.transform.SetParent(GameObject.Find("PlayersList").transform);
                     for (int j = 0; j < players.Count; j++)
                     {
 
@@ -290,6 +371,6 @@ public class GameManager : MonoBehaviour
     void OnGUI()
     {
         Rect rect = new Rect(0, 0, Screen.width, Screen.height);
-        GUI.Label(rect, "Here is a block of text\nlalalala\nanother line\nI could do this all day!");
+        GUI.Label(rect, whosturn);
     }
 }

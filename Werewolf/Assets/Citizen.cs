@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Citizen : MonoBehaviour {
 
@@ -12,6 +13,21 @@ public class Citizen : MonoBehaviour {
     public bool night_action = false;
     public int night_action_cooldown = 0;
     public bool doomed = false; // marcado para morrer
+
+    public struct player_info{
+
+       public string player_name;
+       public string player_identity;
+
+        public void set(string name, string iden) {
+            player_name = name;
+            player_identity = iden;
+        }
+
+
+        };
+
+    public List<player_info> players_info = new List<player_info>();
 
     void Start()
     {
@@ -60,7 +76,7 @@ public class Citizen : MonoBehaviour {
 
 
         }
-        ModelSwitch();
+        //ModelSwitch();
 
         /*
         for (int x = 0; x < modelArray.Length; x++)
@@ -92,33 +108,88 @@ public class Citizen : MonoBehaviour {
 
         } */
 
+        GameObject cam = GameObject.Find("ARCamera");
+        GameManager script = cam.GetComponent<GameManager>();
+
+        GameObject plist = GameObject.Find("PlayersList");
+        for(int i = 0; i < plist.transform.childCount; i++)
+        {
+            GameObject p;
+            player_info temp = new player_info();
+            Citizen s;
+            p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject;
+            s = p.GetComponent<Citizen>();
+
+           
+            if (identity == "Werewolf")
+            {
+                if(s.identity == "Werewolf")
+                {
+
+                    temp.set(p.name, "Werewolf");
+                    players_info.Add(temp);
+                }
+                else
+                {
+                    temp.set(p.name, "Villager");
+                    players_info.Add(temp);
+                }
+               
+                continue;
+            }
+
+            if (identity == "Seer" || identity == "Villager")
+            {
+                
+                 temp.set(p.name, "Villager");
+                players_info.Add(temp);
+
+                continue;
+            }
+
+         
+        }
+
+        Debug.Log(" Sou " + identity);
+        for(int i = 0; i < players_info.Count; i ++)
+        {
+            Debug.Log("Vejo " + players_info[i].player_name + " como: " + players_info[i].player_identity);
+
+        }
     }
 
-    void ModelSwitch()
+   public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
-        for (int x = 0; x < modelArray.Length; x++)
+       
+
+        for (int j = 0; j < this.transform.childCount; j++)
         {
-            if (x == modelNumber)
+            if (this.transform.GetChild(j).gameObject.name == which)
             {
-                modelArray[x].SetActive(true);
+                
+                this.transform.GetChild(j).gameObject.SetActive(true);
             }
             else
             {
-                modelArray[x].SetActive(false);
+                this.transform.GetChild(j).gameObject.SetActive(false);
             }
         }
-        modelNumber += 1;
-        if (modelNumber > modelArray.Length - 1)
+
+        if(which == "Dead")
         {
-            modelNumber = 0;
+
+            for (int j = 0; j < this.transform.childCount; j++)
+            {
+               
+                    this.transform.GetChild(j).gameObject.SetActive(false);
+                
+            }
         }
+
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ModelSwitch();
-        }
+       
     }
 }
