@@ -112,7 +112,9 @@ public class Citizen : MonoBehaviour {
         GameManager script = cam.GetComponent<GameManager>();
 
         GameObject plist = GameObject.Find("PlayersList");
-        for(int i = 0; i < plist.transform.childCount; i++)
+
+      //  Debug.Log("Sou " + identity + "iplist count: " + plist.transform.childCount);
+        for (int i = 0; i < plist.transform.childCount; i++)
         {
             GameObject p;
             player_info temp = new player_info();
@@ -150,14 +152,64 @@ public class Citizen : MonoBehaviour {
          
         }
 
+        /*
         Debug.Log(" Sou " + identity);
         for(int i = 0; i < players_info.Count; i ++)
         {
             Debug.Log("Vejo " + players_info[i].player_name + " como: " + players_info[i].player_identity);
 
         }
+        */
+
+        //Debug.Log("Sou " + this.gameObject.name + "info count: " + players_info.Count);
     }
 
+    public void resetInfo()
+    {
+
+        GameObject cam = GameObject.Find("ARCamera");
+        GameManager script = cam.GetComponent<GameManager>();
+
+        GameObject plist = GameObject.Find("PlayersList");
+
+        //  Debug.Log("Sou " + identity + "iplist count: " + plist.transform.childCount);
+        for (int i = 0; i < plist.transform.childCount; i++)
+        {
+            GameObject p;
+            player_info temp = new player_info();
+            Citizen s;
+            p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject;
+            s = p.GetComponent<Citizen>();
+
+
+            if (identity == "Werewolf")
+            {
+                if (s.identity == "Werewolf")
+                {
+
+                    temp.set(p.gameObject.name, "Werewolf");
+                    players_info.Add(temp);
+                }
+                else
+                {
+                    temp.set(p.gameObject.name, "Villager");
+                    players_info.Add(temp);
+                }
+
+                continue;
+            }
+
+            if (identity == "Seer" || identity == "Villager")
+            {
+
+                temp.set(p.gameObject.name, "Villager");
+                players_info.Add(temp);
+
+                continue;
+            }
+
+        }
+    }
    public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
        
@@ -166,7 +218,7 @@ public class Citizen : MonoBehaviour {
         {
             if (this.transform.GetChild(j).gameObject.name == which)
             {
-                
+                Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
                 this.transform.GetChild(j).gameObject.SetActive(true);
             }
             else
