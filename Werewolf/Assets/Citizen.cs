@@ -13,6 +13,7 @@ public class Citizen : MonoBehaviour {
     public bool night_action = false;
     public int night_action_cooldown = 0;
     public bool doomed = false; // marcado para morrer
+    public bool canchange = true;
 
     public struct player_info{
 
@@ -29,7 +30,7 @@ public class Citizen : MonoBehaviour {
 
     public List<player_info> players_info = new List<player_info>();
 
-    void Start()
+    void Awake()
     {
         modelNumber = 0;
 
@@ -209,35 +210,48 @@ public class Citizen : MonoBehaviour {
             }
 
         }
+
+        if (identity == "Werewolf")
+        {
+            team = "Werewolves";
+            
+        }
+
+        if (identity == "Villager" || identity == "Seer")
+        {
+            team = "Villagers";
+
+        }
+
     }
    public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
-       
 
-        for (int j = 0; j < this.transform.childCount; j++)
-        {
-            if (this.transform.GetChild(j).gameObject.name == which)
-            {
-                Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
-                this.transform.GetChild(j).gameObject.SetActive(true);
-            }
-            else
-            {
-                this.transform.GetChild(j).gameObject.SetActive(false);
-            }
-        }
-
-        if(which == "Dead")
-        {
-
+        
             for (int j = 0; j < this.transform.childCount; j++)
             {
-               
+                if (this.transform.GetChild(j).gameObject.name == which)
+                {
+                    Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
+                    this.transform.GetChild(j).gameObject.SetActive(true);
+                }
+                else
+                {
                     this.transform.GetChild(j).gameObject.SetActive(false);
-                
+                }
             }
-        }
 
+            if (which == "Dead")
+            {
+
+                for (int j = 0; j < this.transform.childCount; j++)
+                {
+
+                    this.transform.GetChild(j).gameObject.SetActive(false);
+
+                }
+            }
+        
     }
 
     void Update()
