@@ -1,5 +1,6 @@
 ﻿
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Vuforia;
@@ -76,6 +77,7 @@ public class GameManager : MonoBehaviour
     public int n_werewolfs; // um terço do numero de players
     public counts qts;
     Citizen script;
+    Dropdown dropmenu; // referencia dropdown
 
     public string whosturn;
     public bool seer = false; // seleciona um jogador e descobre sua identidade
@@ -92,6 +94,9 @@ public class GameManager : MonoBehaviour
     public bool playerOk = true;
     
     List<GameObject> players = new List<GameObject>();
+    List<Dropdown.OptionData> playlist = new List<Dropdown.OptionData>(); // lista do dropdown
+    public Citizen currentPlayerTargetAtNight;
+    public Citizen currentPlayerAtNight;
 
     // Use this for initialization
     void Start()
@@ -112,6 +117,7 @@ public class GameManager : MonoBehaviour
         // startNight();
 
         startTurn(player_turn);
+        
 
     }
 
@@ -168,21 +174,168 @@ public class GameManager : MonoBehaviour
                 //s.ModelSwitch("Villager");
             }
 
-            playerOk = false;
-
-            if (player_turn < n_players_alive)
-            {
-                player_turn++;
-            }
-            else
-            {
-                player_turn = 0;
-            }
-            startTurn(player_turn);
+           
             
 
 
         }
+
+    }
+
+   public void nextPlayer()
+    {
+        playerOk = false;
+
+        // antes do proximo turno, efetivar as ações do player atual
+       switch(currentPlayerAtNight.identity)
+        {
+            case "Werewolf":
+
+                currentPlayerTargetAtNight.votes_werewolf++;
+                break;
+
+            case "Seer":
+
+                string trueident;
+
+                trueident = currentPlayerTargetAtNight.identity;
+                // mostrar na tela trueident
+
+                currentPlayerTargetAtNight.ModelSwitch(trueident);
+
+                // setar timer pro seer conseguir ver quem ele é dps retornar o modelo
+
+                currentPlayerTargetAtNight.ModelSwitch("Villager");
+
+                break;
+
+
+            case "Villager":
+
+                break;
+
+
+
+        }
+
+
+            if (player_turn < n_players_alive)
+        {
+            player_turn++;
+        }
+        else
+        {
+            player_turn = 0;
+            startDay();
+
+        }
+        startTurn(player_turn);
+
+
+       
+
+    }
+
+    void initMenu(string ident)
+    {
+        dropmenu = GameObject.Find("Dropdown").GetComponent<Dropdown>();
+
+        List<Dropdown.OptionData> playlist = new List<Dropdown.OptionData>();
+        GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
+        Dropdown.OptionData opcao = new Dropdown.OptionData();
+
+        switch (ident)
+        {
+            case "Villager":
+
+                dropmenu.ClearOptions();
+                break;
+
+            case "Werewolf":
+
+                dropmenu.ClearOptions();
+
+
+               
+                for (int i = 0; i < plist.transform.childCount ; i++)
+                {
+
+                    opcao = new Dropdown.OptionData();
+                    GameObject p;
+                    Citizen.player_info temp = new Citizen.player_info();
+                    Citizen s;
+                    p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
+                    s = p.GetComponent<Citizen>(); // player X's script
+                                                   //s.resetInfo();
+
+                    if (s.identity == "Werewolf") continue; // n mostre outros werewolfs
+                                                            //s.ModelSwitch("Villager");
+                    Debug.Log("add opcao" + p.name);
+                    opcao.text = p.name;
+                    playlist.Add(opcao);
+                }
+
+                for (int i = 0; i < playlist.Count; i++)
+                {
+                    Debug.Log("opcao" + i + "= " + playlist[i].text);
+                }
+                dropmenu.AddOptions(playlist);
+
+
+                break;
+
+            case "Seer":
+
+                dropmenu.ClearOptions();
+
+                
+                 opcao = new Dropdown.OptionData();
+
+                for (int i = 0; i < plist.transform.childCount; i++)
+                {
+                    Dropdown.OptionData opcao1 = new Dropdown.OptionData();
+                    GameObject p;
+                    Citizen.player_info temp = new Citizen.player_info();
+                    Citizen s;
+                    p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
+                    s = p.GetComponent<Citizen>(); // player X's script
+                                                   //s.resetInfo();
+
+                    //s.ModelSwitch("Villager");
+                    Debug.Log("add opcao" + p.name);
+                    opcao1.text = p.name;
+                    playlist.Add(opcao1);
+                }
+
+                break;
+
+        }
+       
+
+
+    }
+
+    public void getDropmenuSelected(int selec)
+    {
+        GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
+        for (int i = 0; i < plist.transform.childCount; i++)
+        {
+            Dropdown.OptionData opcao1 = new Dropdown.OptionData();
+            GameObject p;
+            Citizen.player_info temp = new Citizen.player_info();
+            Citizen s;
+            p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
+            s = p.GetComponent<Citizen>(); // player X's script
+                                           //s.resetInfo();
+
+        if(playlist[selec].text == p.name)
+            {
+                currentPlayerTargetAtNight = s; // guarda o Citizen marcado
+                break;
+            }
+            //s.ModelSwitch("Villager");
+        }
+            
 
     }
 
@@ -235,7 +388,9 @@ public class GameManager : MonoBehaviour
                 s = p.GetComponent<Citizen>(); // player X's script
 
                 // Debug.Log(p.gameObject.name + s.identity + " info count: " + s.players_info.Count);
+                Citizen shold = new Citizen();
 
+                shold = s;
                 if (!s.alive) continue;
 
 
@@ -246,9 +401,11 @@ public class GameManager : MonoBehaviour
                 string nomee = "Player " + (player_turn + 1);
                 if (p.name == nomee)
                 {
+                    initMenu(s.identity); // cria menu pro turno desse player
 
                     Debug.Log("Entrei turn dentrao");
                     whosturn = p.name + " Turn";
+                    currentPlayerAtNight = shold;
 
                     for (int j = 0; j < plist.transform.childCount; j++)
                     {

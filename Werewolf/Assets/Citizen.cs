@@ -14,6 +14,8 @@ public class Citizen : MonoBehaviour {
     public int night_action_cooldown = 0;
     public bool doomed = false; // marcado para morrer
     public bool canchange = true;
+    public int votes_werewolf = 0;
+    public int votes_people = 0;
 
     public struct player_info{
 
