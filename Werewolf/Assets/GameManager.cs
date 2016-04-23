@@ -95,8 +95,8 @@ public class GameManager : MonoBehaviour
     
     List<GameObject> players = new List<GameObject>();
     List<Dropdown.OptionData> playlist = new List<Dropdown.OptionData>(); // lista do dropdown
-    public Citizen currentPlayerTargetAtNight;
-    public Citizen currentPlayerAtNight;
+    public GameObject currentPlayerTargetAtNight = new GameObject();
+    public GameObject currentPlayerAtNight = new GameObject();
 
     // Use this for initialization
     void Start()
@@ -187,31 +187,32 @@ public class GameManager : MonoBehaviour
         playerOk = false;
 
         // antes do proximo turno, efetivar as ações do player atual
-       switch(currentPlayerAtNight.identity)
+       switch(currentPlayerAtNight.GetComponent<Citizen>().identity)
         {
             case "Werewolf":
 
-                currentPlayerTargetAtNight.votes_werewolf++;
+                currentPlayerTargetAtNight.GetComponent<Citizen>().votes_werewolf++;
                 break;
 
             case "Seer":
 
                 string trueident;
 
-                trueident = currentPlayerTargetAtNight.identity;
+                trueident = currentPlayerTargetAtNight.GetComponent<Citizen>().identity;
                 // mostrar na tela trueident
 
-                currentPlayerTargetAtNight.ModelSwitch(trueident);
+                currentPlayerTargetAtNight.GetComponent<Citizen>().ModelSwitch(trueident);
 
                 // setar timer pro seer conseguir ver quem ele é dps retornar o modelo
 
-                currentPlayerTargetAtNight.ModelSwitch("Villager");
+                currentPlayerTargetAtNight.GetComponent<Citizen>().ModelSwitch("Villager");
 
                 break;
 
 
             case "Villager":
 
+                
                 break;
 
 
@@ -240,7 +241,7 @@ public class GameManager : MonoBehaviour
     {
         dropmenu = GameObject.Find("Dropdown").GetComponent<Dropdown>();
 
-        List<Dropdown.OptionData> playlist = new List<Dropdown.OptionData>();
+        playlist = new List<Dropdown.OptionData>();
         GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
         Dropdown.OptionData opcao = new Dropdown.OptionData();
 
@@ -249,6 +250,9 @@ public class GameManager : MonoBehaviour
             case "Villager":
 
                 dropmenu.ClearOptions();
+
+                
+
                 break;
 
             case "Werewolf":
@@ -270,15 +274,18 @@ public class GameManager : MonoBehaviour
 
                     if (s.identity == "Werewolf") continue; // n mostre outros werewolfs
                                                             //s.ModelSwitch("Villager");
-                    Debug.Log("add opcao" + p.name);
+                    Debug.Log("WOLF add opcao" + p.name);
                     opcao.text = p.name;
                     playlist.Add(opcao);
                 }
 
+                /*
                 for (int i = 0; i < playlist.Count; i++)
                 {
                     Debug.Log("opcao" + i + "= " + playlist[i].text);
                 }
+
+                */
                 dropmenu.AddOptions(playlist);
 
 
@@ -288,12 +295,12 @@ public class GameManager : MonoBehaviour
 
                 dropmenu.ClearOptions();
 
-                
-                 opcao = new Dropdown.OptionData();
+
 
                 for (int i = 0; i < plist.transform.childCount; i++)
                 {
-                    Dropdown.OptionData opcao1 = new Dropdown.OptionData();
+
+                    opcao = new Dropdown.OptionData();
                     GameObject p;
                     Citizen.player_info temp = new Citizen.player_info();
                     Citizen s;
@@ -301,11 +308,23 @@ public class GameManager : MonoBehaviour
                     s = p.GetComponent<Citizen>(); // player X's script
                                                    //s.resetInfo();
 
+                    // n mostre outros werewolfs
                     //s.ModelSwitch("Villager");
-                    Debug.Log("add opcao" + p.name);
-                    opcao1.text = p.name;
-                    playlist.Add(opcao1);
+
+                    if (s.identity == "Seer") continue;
+                    Debug.Log("SEER add opcao" + p.name);
+                    opcao.text = p.name;
+                    playlist.Add(opcao);
                 }
+
+                /*
+                for (int i = 0; i < playlist.Count; i++)
+                {
+                    Debug.Log("opcao" + i + "= " + playlist[i].text);
+                }
+
+                */
+                dropmenu.AddOptions(playlist);
 
                 break;
 
@@ -317,24 +336,35 @@ public class GameManager : MonoBehaviour
 
     public void getDropmenuSelected(int selec)
     {
-        GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
-        for (int i = 0; i < plist.transform.childCount; i++)
-        {
-            Dropdown.OptionData opcao1 = new Dropdown.OptionData();
-            GameObject p;
-            Citizen.player_info temp = new Citizen.player_info();
-            Citizen s;
-            p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
-            s = p.GetComponent<Citizen>(); // player X's script
-                                           //s.resetInfo();
+        int res = playlist.Count;
+        Debug.Log("valor do botao:" + selec + " | Size da playlist: " + res);
 
-        if(playlist[selec].text == p.name)
+        GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
+
+       // for(int j = 0; j < playlist.Count; j++)
+      //  {
+
+            for (int i = 0; i < plist.transform.childCount; i++)
             {
-                currentPlayerTargetAtNight = s; // guarda o Citizen marcado
-                break;
+                Dropdown.OptionData opcao1 = new Dropdown.OptionData();
+                GameObject p;
+                Citizen.player_info temp = new Citizen.player_info();
+                Citizen s;
+                p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
+                s = p.GetComponent<Citizen>(); // player X's script
+                                               //s.resetInfo();
+
+                if (playlist[selec].text == p.name)
+                {
+                    Debug.Log(" guardei como alvo:" + p.name);
+                    currentPlayerTargetAtNight = p.gameObject; // guarda o Citizen marcado
+                    break;
+                }
+                //s.ModelSwitch("Villager");
             }
-            //s.ModelSwitch("Villager");
-        }
+
+       // }
+      
             
 
     }
@@ -390,7 +420,7 @@ public class GameManager : MonoBehaviour
                 // Debug.Log(p.gameObject.name + s.identity + " info count: " + s.players_info.Count);
                 Citizen shold = new Citizen();
 
-                shold = s;
+                
                 if (!s.alive) continue;
 
 
@@ -403,9 +433,10 @@ public class GameManager : MonoBehaviour
                 {
                     initMenu(s.identity); // cria menu pro turno desse player
 
-                    Debug.Log("Entrei turn dentrao");
-                    whosturn = p.name + " Turn";
-                    currentPlayerAtNight = shold;
+                    
+                    whosturn = p.name + " Turn | " + s.identity;
+                    Debug.Log("SETEI CURRENT PLAYER"); 
+                    currentPlayerAtNight = p.gameObject;
 
                     for (int j = 0; j < plist.transform.childCount; j++)
                     {
