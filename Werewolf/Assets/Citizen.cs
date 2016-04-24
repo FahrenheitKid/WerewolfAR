@@ -226,6 +226,16 @@ public class Citizen : MonoBehaviour {
         }
 
     }
+
+    public void resetVotes(bool people, bool wolf)
+    {
+        if(people == true)
+        votes_people = 0;
+
+        if(wolf == true)
+        votes_werewolf = 0;
+
+    }
    public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
 
@@ -234,7 +244,7 @@ public class Citizen : MonoBehaviour {
             {
                 if (this.transform.GetChild(j).gameObject.name == which)
                 {
-                    Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
+                    //Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
                     this.transform.GetChild(j).gameObject.SetActive(true);
                 }
                 else
@@ -243,7 +253,7 @@ public class Citizen : MonoBehaviour {
                 }
             }
 
-            if (which == "Dead")
+        if (which == "Dead" || alive == false)
             {
 
                 for (int j = 0; j < this.transform.childCount; j++)
@@ -253,6 +263,8 @@ public class Citizen : MonoBehaviour {
 
                 }
             }
+
+           
         
     }
 
