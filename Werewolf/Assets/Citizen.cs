@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Citizen : MonoBehaviour {
+public class Citizen : MonoBehaviour
+{
 
     // Use this for initialization
     public GameObject[] modelArray = new GameObject[3];
@@ -17,18 +18,17 @@ public class Citizen : MonoBehaviour {
     public int votes_werewolf = 0;
     public int votes_people = 0;
 
-    public struct player_info{
+    public struct player_info
+    {
+        public string player_name;
+        public string player_identity;
 
-       public string player_name;
-       public string player_identity;
-
-        public void set(string name, string iden) {
+        public void set(string name, string iden)
+        {
             player_name = name;
             player_identity = iden;
         }
-
-
-        };
+    };
 
     public List<player_info> players_info = new List<player_info>();
 
@@ -41,7 +41,7 @@ public class Citizen : MonoBehaviour {
             //Transform temp;
             if (x == 0)
             {
-                
+
                 //temp =
                 modelArray[x] = this.gameObject.transform.Find("Werewolf").gameObject;
                 if (identity == "Werewolf")
@@ -59,10 +59,10 @@ public class Citizen : MonoBehaviour {
                 if (identity == "Seer")
                 {
                     team = "Villagers";
-                modelArray[x].SetActive(true);
-            }
-            else
-                modelArray[x].SetActive(false);
+                    modelArray[x].SetActive(true);
+                }
+                else
+                    modelArray[x].SetActive(false);
             }
 
             if (x == 2)
@@ -116,7 +116,7 @@ public class Citizen : MonoBehaviour {
 
         GameObject plist = GameObject.Find("PlayersList");
 
-      //  Debug.Log("Sou " + identity + "iplist count: " + plist.transform.childCount);
+        //  Debug.Log("Sou " + identity + "iplist count: " + plist.transform.childCount);
         for (int i = 0; i < plist.transform.childCount; i++)
         {
             GameObject p;
@@ -125,10 +125,10 @@ public class Citizen : MonoBehaviour {
             p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject;
             s = p.GetComponent<Citizen>();
 
-           
+
             if (identity == "Werewolf")
             {
-                if(s.identity == "Werewolf")
+                if (s.identity == "Werewolf")
                 {
 
                     temp.set(p.name, "Werewolf");
@@ -139,20 +139,20 @@ public class Citizen : MonoBehaviour {
                     temp.set(p.name, "Villager");
                     players_info.Add(temp);
                 }
-               
+
                 continue;
             }
 
             if (identity == "Seer" || identity == "Villager")
             {
-                
-                 temp.set(p.name, "Villager");
+
+                temp.set(p.name, "Villager");
                 players_info.Add(temp);
 
                 continue;
             }
 
-         
+
         }
 
         /*
@@ -216,7 +216,7 @@ public class Citizen : MonoBehaviour {
         if (identity == "Werewolf")
         {
             team = "Werewolves";
-            
+
         }
 
         if (identity == "Villager" || identity == "Seer")
@@ -229,47 +229,47 @@ public class Citizen : MonoBehaviour {
 
     public void resetVotes(bool people, bool wolf)
     {
-        if(people == true)
-        votes_people = 0;
+        if (people == true)
+            votes_people = 0;
 
-        if(wolf == true)
-        votes_werewolf = 0;
+        if (wolf == true)
+            votes_werewolf = 0;
 
     }
-   public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
+    public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
 
-        
-            for (int j = 0; j < this.transform.childCount; j++)
+
+        for (int j = 0; j < this.transform.childCount; j++)
+        {
+            if (this.transform.GetChild(j).gameObject.name == which)
             {
-                if (this.transform.GetChild(j).gameObject.name == which)
-                {
-                    //Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
-                    this.transform.GetChild(j).gameObject.SetActive(true);
-                }
-                else
-                {
-                    this.transform.GetChild(j).gameObject.SetActive(false);
-                }
+                //Debug.Log(this.gameObject.name + " setando " + this.transform.GetChild(j).gameObject.name + "true");
+                this.transform.GetChild(j).gameObject.SetActive(true);
             }
+            else
+            {
+                this.transform.GetChild(j).gameObject.SetActive(false);
+            }
+        }
 
         if (which == "Dead" || alive == false)
+        {
+
+            for (int j = 0; j < this.transform.childCount; j++)
             {
 
-                for (int j = 0; j < this.transform.childCount; j++)
-                {
+                this.transform.GetChild(j).gameObject.SetActive(false);
 
-                    this.transform.GetChild(j).gameObject.SetActive(false);
-
-                }
             }
+        }
 
-           
-        
+
+
     }
 
     void Update()
     {
-       
+
     }
 }
