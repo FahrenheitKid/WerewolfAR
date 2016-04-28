@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     }
     */
 
-    public struct counts
+    public struct counts // counts é uma struct pra usar num for na hora de carregar os players, pra saber quantos de cada classe ainda precisa adicinoar
     {
 
         public int villagers;
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
 
         public int getVillagers()
         {
-            return 3;
+            return 3; // essa função n faz nada Q
 
         }
     }
@@ -82,24 +82,28 @@ public class GameManager : MonoBehaviour
     public bool little_girl = false; // no começo do jogo, sabe a identidade de todos os werewolfs
     public bool witch = false;
 
-    public bool night = true;
+    public bool night = true; // controla os ciclos de dia e noite
     public bool day = false;
-    public int day_count = 0;
-    public int night_count = 0;
-    public int player_turn = 0;
-    public bool playerOk = true;
-    public string whoWasKilledLastNight = "";
-    public string whoWasLynched = "";
 
-    List<GameObject> players = new List<GameObject>();
+
+    public int day_count = 0; // cont ao numero de dias e noite
+    public int night_count = 0;
+
+
+    public int player_turn = 0; // qual o player da rodada, passa-se essa variavel no startTurn();
+    public bool playerOk = true; // checka se o player deu ready
+    public string whoWasKilledLastNight = ""; // guarda quem foi morto na ultima noite
+    public string whoWasLynched = ""; // guarda quem foi linchaod no ultimo dia
+
+    List<GameObject> players = new List<GameObject>(); // lista dos Players (formados pelos modelos e o script Citizen)
     List<Dropdown.OptionData> playlist = new List<Dropdown.OptionData>(); // lista do dropdown
-    public GameObject currentPlayerTargetAtNight = new GameObject();
-    public GameObject currentPlayerAtNight = new GameObject();
+    public GameObject currentPlayerTargetAtNight = new GameObject(); // guarda o current player que foi alvo. Ex: seer escolheu player 1, ai guarda o player 1, ou se o werewolf votar player 2, guarda p2
+    public GameObject currentPlayerAtNight = new GameObject(); // mesma coisa que antes só que guarda o jogador que está jogando no turno atual, e não seu alvo
 
     // Use this for initialization
     void Start()
     {
-        // script = GetComponent<VisionLogic>();
+        // define numero de players iniciais e werewolfs
 
         n_players1 = 6;
         n_werewolfs1 = n_players1 / 3;
@@ -107,13 +111,15 @@ public class GameManager : MonoBehaviour
         n_werewolfs = (int)n_werewolfs1;
         n_players = (int)n_players1;
         n_villagers = n_players - n_werewolfs;
+
+        // define quais classes vão estar no jogo
         seer = true;
 
-        initGame();
-        initTargets();
+        initGame(); // embaralha os players
+        initTargets(); // carrega os imagetargets e atribui pra acda um o player respectivo
         // startNight();
 
-        startTurn(player_turn);
+        startTurn(player_turn); // começa o turno (default é pela noite)
     }
 
     // Update is called once per frame
@@ -125,6 +131,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
+            //checka quantos jogadores tem em ada time
             script = players[i].GetComponent<Citizen>();
             if (script.team == "Villagers" && script.alive == true)
             {
@@ -137,6 +144,7 @@ public class GameManager : MonoBehaviour
                 teamW++;
                 continue;
             }
+
         }
 
         if (teamW == 0)
@@ -163,20 +171,21 @@ public class GameManager : MonoBehaviour
 
             //s.ModelSwitch("Villager");
 
-            if (s.alive == true) tempi++;
+            if (s.alive == true) tempi++; 
 
         }
 
-        n_players_alive = tempi;
+        n_players_alive = tempi; // atualiza qtd de jogadores vivos
     }
 
-    public void nextPlayer()
+    public void nextPlayer() // essa função é chamada quando o jogador aperta ready
     {
         playerOk = false;
 
         if (night == true)
         {
-            // antes do proximo turno, efetivar as ações do player atual
+            // antes do proximo turno, efetivar as ações do player atual baseado na sua classe
+            // aqui adicinoamos mais cases e logica conforme a classe
             switch (currentPlayerAtNight.GetComponent<Citizen>().identity)
             {
                 case "Werewolf":
@@ -201,7 +210,7 @@ public class GameManager : MonoBehaviour
                     break;
 
                 case "Villager":
-
+                    // n faz nada hu3
                     break;
             }
         }
@@ -249,9 +258,10 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            // aqui vamos pro proximo player vivo a jogar
             startTurn(player_turn);
         }
-        else
+        else // se todos ja foram, vira dia ou noite
         {
             player_turn = 0;
             if (day == true && night == false)
@@ -267,7 +277,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void setTargetToDropdownDefault(Dropdown dr)
+    void setTargetToDropdownDefault(Dropdown dr) // funçãozinha pra dropmenu n começar vazio o valor
     {
         GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
 
@@ -295,7 +305,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void initMenu(string ident)
+    void initMenu(string ident) // essa função é chamada sempre que é a vez de alguém, ela cria o dropdown de acordo com a classe
     {
 
         if (night == true)
@@ -306,6 +316,8 @@ public class GameManager : MonoBehaviour
             GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
             Dropdown.OptionData opcao = new Dropdown.OptionData();
 
+            // quando adicinoar classes, adicinoar um case aqu também pra serem criados opções certas no dropdown
+            // (ex: outra classe em grupo n deve ter como eliminar seus aliados)
             switch (ident)
             {
                 case "Villager":
@@ -321,7 +333,7 @@ public class GameManager : MonoBehaviour
                     dropmenu.ClearOptions();
 
 
-
+                    // aqui temos que mostrar só não-werewolves
                     for (int i = 0; i < plist.transform.childCount; i++)
                     {
 
@@ -355,7 +367,7 @@ public class GameManager : MonoBehaviour
                     dropmenu.ClearOptions();
 
 
-
+                    // aqui precisamos ignorar só a propria seer
                     for (int i = 0; i < plist.transform.childCount; i++)
                     {
 
@@ -398,6 +410,7 @@ public class GameManager : MonoBehaviour
 
         if (day == true)
         {
+            // se for dia, temos que msotrar todo mundo vivo, e ignorar a si mesmo.
 
             dropmenu = GameObject.Find("Dropdown").GetComponent<Dropdown>();
 
@@ -448,7 +461,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void getDropmenuSelected(int selec)
+    public void getDropmenuSelected(int selec) // função que pega o player selecinoado no dropdown e guarda no CurrentPlayerTargetAtNight
     {
         int res = playlist.Count;
         Debug.Log("valor do botao:" + selec + " | Size da playlist: " + res);
@@ -483,9 +496,9 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void startTurn(int trn)
+    void startTurn(int trn) // começa o turno do player trn, aí dentro da função tem uma parte pra acso seja dia, e outra pra acso seja noite
     {
-        if (night == true)
+        if (night == true) // se for noite
         {
             if (playerOk == true)
             {
@@ -517,7 +530,7 @@ public class GameManager : MonoBehaviour
 
                 //night = true;
                 GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
-                for (int i = 0; i < plist.transform.childCount; i++)
+                for (int i = 0; i < plist.transform.childCount; i++) // começa a iterar pelos jogadores
                 {
                     GameObject p;
                     Citizen.player_info temp = new Citizen.player_info();
@@ -534,27 +547,27 @@ public class GameManager : MonoBehaviour
                     Debug.Log(p.name + "|" + s.identity);
 
                     string nomee = "Player " + (player_turn + 1);
-                    if (p.name == nomee)
+                    if (p.name == nomee) // se o jogador do for ali de cima, for == ao jogador da vez, é esse msm, continua lek!
                     {
                         initMenu(s.identity); // cria menu pro turno desse player
 
 
                         whosturn = p.name + " Turn | " + s.identity;
                         Debug.Log("SETEI CURRENT PLAYER");
-                        currentPlayerAtNight = p.gameObject;
+                        currentPlayerAtNight = p.gameObject; // atualiza o jogador da vez
 
-                        for (int j = 0; j < plist.transform.childCount; j++)
+                        for (int j = 0; j < plist.transform.childCount; j++) // nesse for passamos por todos os outros jogadores e atualizamos o que o jogador da vez deve enxergar de acordo com as informações q ele tem
                         {
-                            if (i == j) continue;
+                            if (i == j) continue; // se for ele msm pula
 
                             GameObject pl;
                             pl = plist.transform.GetChild(j).gameObject.transform.GetChild(0).gameObject; // current player Y
                             Citizen sl;
                             sl = pl.GetComponent<Citizen>(); // player y's script
 
-                            if (pl.name == p.name) continue;
+                            if (pl.name == p.name) continue; // se for ele msm pula
 
-                            if (!sl.alive) continue;
+                            if (!sl.alive) continue; // se n tiver vivo pula
 
                             // Debug.Log(" b4 " + p.gameObject.name + " info count" + s.players_info.Count);
                             for (int z = 0; z < s.players_info.Count; z++)
@@ -566,14 +579,14 @@ public class GameManager : MonoBehaviour
                             for (int k = 0; k < s.players_info.Count; k++)
                             {
                                 //Debug.Log(" sao iguais? " + s.players_info[k].player_name + "|" + pl.gameObject.name);
-                                if (s.players_info[k].player_name == pl.gameObject.name)
+                                if (s.players_info[k].player_name == pl.gameObject.name) 
                                 {
 
-                                    string test = s.players_info[k].player_identity;
+                                    string test = s.players_info[k].player_identity; // aqui guardamos como o jogador da vez deve enxergar o outro jogador
                                     // Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
 
 
-                                    sl.ModelSwitch(test);
+                                    sl.ModelSwitch(test); // aqui que mudamos os modelos dos outros jogadores
                                     //  sl.canchange = false;
                                 }
                             }
@@ -588,8 +601,9 @@ public class GameManager : MonoBehaviour
 
         }
 
-        if (day == true)
+        if (day == true) // se for dia
         {
+            // fazemos basicamento o msm ciclo da noite.
 
             if (playerOk == true)
             {
@@ -660,7 +674,7 @@ public class GameManager : MonoBehaviour
                                     string test = s.players_info[k].player_identity;
                                     Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
 
-                                    sl.ModelSwitch(test);
+                                    sl.ModelSwitch(test); // mudamos os modelos de acordo com cada um novamente
                                     //  sl.canchange = false;
                                 }
                             }
@@ -673,11 +687,11 @@ public class GameManager : MonoBehaviour
 
             }
 
-            // votacao do dia aqui
+            // votacao do dia aqui ???????? (n lembro o pq dessa anotação, ignorem até eu lembrar)
         }
     }
 
-    void startNight()
+    void startNight() // função que começa a noite e atualiza as coisas de acordo com as mudanças do dia
     {
         night = true;
         day = false;
@@ -691,6 +705,8 @@ public class GameManager : MonoBehaviour
 
         string killedByPeople = "";
         int votestemp = 0;
+
+        //nesse for vemos quem teve mais votos das pessoas pra ver quem foi linchado
         for (int i = 0; i < plist.transform.childCount; i++)
         {
             Dropdown.OptionData opcao1 = new Dropdown.OptionData();
@@ -710,6 +726,7 @@ public class GameManager : MonoBehaviour
         }
 
         int tie = 0;
+        // nesse for verificamos se houve empate na votação
         for (int i = 0; i < plist.transform.childCount; i++)
         {
             Dropdown.OptionData opcao1 = new Dropdown.OptionData();
@@ -727,7 +744,7 @@ public class GameManager : MonoBehaviour
             //s.ModelSwitch("Villager");
         }
 
-
+        // se teve empate, resetamos os votos e fazemos dnv isso aqui
         if (tie > 1)
         {
             // empate recomeca o dia
@@ -745,13 +762,13 @@ public class GameManager : MonoBehaviour
                 s.resetVotes(true, false);
                 //s.ModelSwitch("Villager");
             }
-
+            //aqui mandamos um startDay passando true, pq o TIE = true (houve empate)
             startDay(true);
 
             return;
         }
 
-
+        // aqui vemos quem foi morto e marcamos devidamente
         for (int i = 0; i < plist.transform.childCount; i++)
         {
             Dropdown.OptionData opcao1 = new Dropdown.OptionData();
@@ -771,8 +788,10 @@ public class GameManager : MonoBehaviour
             //s.ModelSwitch("Villager");
         }
 
+        //mostramos a mensagem de quem foi linchado
         whoWasLynched = killedByPeople + " foi linchado";
 
+        //começamos o prox turno
         startTurn(player_turn);
     }
 
@@ -783,7 +802,7 @@ public class GameManager : MonoBehaviour
         night = false;
         day = true;
 
-        if (tie == false)
+        if (tie == false) // se n houve empate faz o ciclo "normal"
         {
             // TIMER: mostra na tela quem foi assassinado
 
@@ -794,6 +813,9 @@ public class GameManager : MonoBehaviour
 
             string killedbywolf = "";
             int votestemp = 0;
+
+            //nesse for verificamos quem teve a maioria dos votos dos lobos para mata-lo
+            // outras classes que matam jogador (em conjunto ou sozinho) verificam as coisas aqui tb (por enquanto só os lobos)
             for (int i = 0; i < plist.transform.childCount; i++)
             {
                 Dropdown.OptionData opcao1 = new Dropdown.OptionData();
@@ -813,6 +835,7 @@ public class GameManager : MonoBehaviour
                 //s.ModelSwitch("Villager");
             }
 
+            // aqui setamos como morto tal jogador
             for (int i = 0; i < plist.transform.childCount; i++)
             {
                 Dropdown.OptionData opcao1 = new Dropdown.OptionData();
@@ -832,12 +855,15 @@ public class GameManager : MonoBehaviour
                 //s.ModelSwitch("Villager");
             }
 
+            //mostramos quem foi morto pelo lobo
             whoWasKilledLastNight = killedbywolf + " foi assassinado pelos lobisomens";
 
         }
+
+        //começa o proximo turno
         startTurn(player_turn);
     }
-    void initGame()
+    void initGame() // aqui começamos as regras do jogo: criamos todas as classes necessarias e randomizamos players
     {
 
         n_players_alive = n_players;
@@ -864,10 +890,17 @@ public class GameManager : MonoBehaviour
             listap[k] = listap[r];
             listap[r] = temp;
         }
+        
 
+        //nesse for que usamos a struct counts, cada vez que criamos classe x, incrementamos a classe x no counts. Quando a classe x atingir a quantidade necessaria, paramos de criar classe x e começamos
+        // a criar classe y, e assim por diante
         for (int i = 0; i < listap.Count; i++)
         {
             GameObject go = Instantiate(Resources.Load("Player")) as GameObject;
+
+            // seta posição pro player
+          //  go = Instantiate(go, new Vector3(0, 0, 0), go.transform.rotation) as GameObject;
+            
             go.name = "Player " + (listap[i] + 1);
             script = go.GetComponent<Citizen>();
 
@@ -916,7 +949,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void initTargets()
+    void initTargets() // aqui é a parte onde o vuria carrega as database e os image target, agora tão com as cartas certas e os players respectivos certos
     {
 
         {
@@ -935,12 +968,13 @@ public class GameManager : MonoBehaviour
             {
                 string name = trackableBehaviour.TrackableName;
                 Debug.Log("loading Trackable: " + name);
+                char num = name[name.Length - 1];
 
-
-                if (i < players.Count)
+                int numero = int.Parse(num.ToString());
+                if (numero <= players.Count)
                 {
 
-                    trackableBehaviour.gameObject.transform.name = "ImageTarget " + (i + 1);
+                    trackableBehaviour.gameObject.transform.name = "ImageTarget " + (numero);
 
                     trackableBehaviour.gameObject.transform.SetParent(GameObject.Find("PlayersList").transform);
                     trackableBehaviour.gameObject.AddComponent<DefaultTrackableEventHandler>();
@@ -950,11 +984,12 @@ public class GameManager : MonoBehaviour
                         //  Debug.Log("<color=yellow>player name: " + players[i].name + "</color>");
                         //Debug.Log("<color=blue>player da vez: Player " + (j + 1)  + "</color>");
                         //Debug.Log("Trackable name: " + name);
-                        string nametemp = "Player " + (i + 1);
+                        string nametemp = "Player " + (numero);
                         if (players[j].name == nametemp)
                         {
-                            Debug.Log("<color=yellow> criando player: " + (i + 1) + "</color>");
+                            Debug.Log("<color=yellow> criando player: " + (numero) + "</color>");
                             players[j].transform.SetParent(trackableBehaviour.gameObject.transform);
+                           // players[j].transform.position.Set(0.0f, 0.0f, 0.0f);
 
                         }
 
@@ -989,7 +1024,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void OnGUI()
+    void OnGUI() // mostramos mensagens na tela
     {
         GUI.Label(new Rect(10, 10, 300, 30), whosturn);
 
