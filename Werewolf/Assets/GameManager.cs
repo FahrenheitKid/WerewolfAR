@@ -296,7 +296,7 @@ public class GameManager : MonoBehaviour
 
             if (playlist[dr.value].text == p.name)
             {
-                Debug.Log(" guardei como alvo:" + p.name);
+                //Debug.Log(" guardei como alvo:" + p.name);
                 currentPlayerTargetAtNight = p.gameObject; // guarda o Citizen marcado
                 break;
             }
@@ -436,7 +436,12 @@ public class GameManager : MonoBehaviour
                 // n mostre outros werewolfs
                 //s.ModelSwitch("Villager");
 
-                if (currentPlayerAtNight.name == p.name) continue;
+                if (currentPlayerAtNight.name == p.name)
+                {
+                    Debug.Log("atual:" + currentPlayerAtNight.name + " n adicionou opcao" + p.name);
+                    continue;
+                }
+                
 
                 if (s.alive == false) continue;
                 //Debug.Log("SEER add opcao" + p.name);
@@ -483,7 +488,7 @@ public class GameManager : MonoBehaviour
 
             if (playlist[selec].text == p.name)
             {
-                Debug.Log(" guardei como alvo:" + p.name);
+                //Debug.Log(" guardei como alvo:" + p.name);
                 currentPlayerTargetAtNight = p.gameObject; // guarda o Citizen marcado
                 break;
             }
@@ -542,19 +547,28 @@ public class GameManager : MonoBehaviour
                     //jojo????????????????????????????????????????????????????????????????????????????
                     //Citizen shold = new Citizen();
 
-                    if (!s.alive) continue;
+                   // if (!s.alive) continue;
 
                     Debug.Log(p.name + "|" + s.identity);
 
                     string nomee = "Player " + (player_turn + 1);
-                    if (p.name == nomee) // se o jogador do for ali de cima, for == ao jogador da vez, é esse msm, continua lek!
+
+                    if(p.name == nomee && s.alive == false)
                     {
-                        initMenu(s.identity); // cria menu pro turno desse player
+                        player_turn++;
+                        continue;
+                    }
+
+                    if (p.name == nomee && s.alive == true) // se o jogador do for ali de cima, for == ao jogador da vez, é esse msm, continua lek!
+                    {
+                        
+                      
 
 
                         whosturn = p.name + " Turn | " + s.identity;
-                        Debug.Log("SETEI CURRENT PLAYER");
+                        Debug.Log("SETEI CURRENT PLAYER = " + p.name);
                         currentPlayerAtNight = p.gameObject; // atualiza o jogador da vez
+                        initMenu(s.identity); // cria menu pro turno desse player
 
                         for (int j = 0; j < plist.transform.childCount; j++) // nesse for passamos por todos os outros jogadores e atualizamos o que o jogador da vez deve enxergar de acordo com as informações q ele tem
                         {
@@ -635,13 +649,20 @@ public class GameManager : MonoBehaviour
                     Debug.Log(p.name + "|" + s.identity);
 
                     string nomee = "Player " + (player_turn + 1);
-                    if (p.name == nomee)
+                    if (p.name == nomee && s.alive == false)
                     {
-                        initMenu(s.identity); // cria menu pro turno desse player
+                        player_turn++;
+                        continue;
+                    }
+
+                    if (p.name == nomee && s.alive == true) // se o jogador do for ali de cima, for == ao jogador da vez, é esse msm, continua lek!
+                    {
+                       
 
                         whosturn = p.name + " Turn | " + s.identity;
-                        Debug.Log("SETEI CURRENT PLAYER");
+                        Debug.Log("SETEI CURRENT PLAYER = " + p.name);
                         currentPlayerAtNight = p.gameObject;
+                        initMenu(s.identity); // cria menu pro turno desse player
 
                         for (int j = 0; j < plist.transform.childCount; j++)
                         {
@@ -848,6 +869,7 @@ public class GameManager : MonoBehaviour
 
                 if (p.name == killedbywolf)
                 {
+                    Debug.Log(p.name + " FOI MORTO COM " + votestemp + " votos");
                     s.alive = false;
                     s.doomed = true;
 
