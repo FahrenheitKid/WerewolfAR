@@ -31,6 +31,17 @@ public class GameManager : MonoBehaviour
     }
     */
 
+    public Font font;
+    private float startTime = 0;
+    private float ellapsedTime = 0;
+    private string textTime;
+
+    private bool isSeer = false;
+    private string textTimeSeer;
+    private string whoSeerSaw = ""; //guarda quem a vidende viu
+    private float startTimeSeer = 0;
+    private float ellapsedTimeSeer = 0;
+
     public struct counts // counts é uma struct pra usar num for na hora de carregar os players, pra saber quantos de cada classe ainda precisa adicinoar
     {
 
@@ -103,8 +114,9 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        // define numero de players iniciais e werewolfs
+        startTime = Time.time;
 
+        // define numero de players iniciais e werewolfs
         n_players1 = 6;
         n_werewolfs1 = n_players1 / 3;
         Mathf.Floor(n_werewolfs1);
@@ -172,9 +184,7 @@ public class GameManager : MonoBehaviour
             //s.ModelSwitch("Villager");
 
             if (s.alive == true) tempi++; 
-
         }
-
         n_players_alive = tempi; // atualiza qtd de jogadores vivos
     }
 
@@ -202,8 +212,12 @@ public class GameManager : MonoBehaviour
 
                     currentPlayerTargetAtNight.GetComponent<Citizen>().ModelSwitch(trueident);
 
-                    Debug.Log("Seer descobriu que" + currentPlayerTargetAtNight.name + " eh um" + currentPlayerTargetAtNight.GetComponent<Citizen>().identity);
+                    Debug.Log("Seer descobriu que" + currentPlayerTargetAtNight.name + " eh um " + currentPlayerTargetAtNight.GetComponent<Citizen>().identity);
                     // setar timer pro seer conseguir ver quem ele é dps retornar o modelo
+                    //Timer Seer
+                    isSeer = true;
+                    whoSeerSaw = "Seer descobriu que" + currentPlayerTargetAtNight.name + " eh um " + currentPlayerTargetAtNight.GetComponent<Citizen>().identity;
+                    startTimeSeer = Time.time;
 
                     currentPlayerTargetAtNight.GetComponent<Citizen>().ModelSwitch("Villager");
 
@@ -311,7 +325,6 @@ public class GameManager : MonoBehaviour
         if (night == true)
         {
             dropmenu = GameObject.Find("Dropdown").GetComponent<Dropdown>();
-
             playlist = new List<Dropdown.OptionData>();
             GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
             Dropdown.OptionData opcao = new Dropdown.OptionData();
@@ -323,23 +336,17 @@ public class GameManager : MonoBehaviour
                 case "Villager":
 
                     dropmenu.ClearOptions();
-
-
-
                     break;
 
                 case "Werewolf":
 
                     dropmenu.ClearOptions();
-
-
                     // aqui temos que mostrar só não-werewolves
                     for (int i = 0; i < plist.transform.childCount; i++)
                     {
 
                         opcao = new Dropdown.OptionData();
                         GameObject p;
-                        Citizen.player_info temp = new Citizen.player_info();
                         Citizen s;
                         p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                         s = p.GetComponent<Citizen>(); // player X's script
@@ -358,22 +365,17 @@ public class GameManager : MonoBehaviour
 
                     dropmenu.AddOptions(playlist);
                     setTargetToDropdownDefault(dropmenu);
-
-
                     break;
 
                 case "Seer":
 
                     dropmenu.ClearOptions();
-
-
                     // aqui precisamos ignorar só a propria seer
                     for (int i = 0; i < plist.transform.childCount; i++)
                     {
 
                         opcao = new Dropdown.OptionData();
                         GameObject p;
-                        Citizen.player_info temp = new Citizen.player_info();
                         Citizen s;
                         p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                         s = p.GetComponent<Citizen>(); // player X's script
@@ -403,9 +405,7 @@ public class GameManager : MonoBehaviour
                     setTargetToDropdownDefault(dropmenu);
 
                     break;
-
             }
-
         }
 
         if (day == true)
@@ -420,14 +420,10 @@ public class GameManager : MonoBehaviour
 
             dropmenu.ClearOptions();
 
-
-
             for (int i = 0; i < plist.transform.childCount; i++)
             {
-
                 opcao = new Dropdown.OptionData();
                 GameObject p;
-                Citizen.player_info temp = new Citizen.player_info();
                 Citizen s;
                 p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                 s = p.GetComponent<Citizen>(); // player X's script
@@ -442,7 +438,6 @@ public class GameManager : MonoBehaviour
                     continue;
                 }
                 
-
                 if (s.alive == false) continue;
                 //Debug.Log("SEER add opcao" + p.name);
                 opcao.text = p.name;
@@ -460,10 +455,7 @@ public class GameManager : MonoBehaviour
             */
             dropmenu.AddOptions(playlist);
             setTargetToDropdownDefault(dropmenu);
-
-
         }
-
     }
 
     public void getDropmenuSelected(int selec) // função que pega o player selecinoado no dropdown e guarda no CurrentPlayerTargetAtNight
@@ -473,14 +465,10 @@ public class GameManager : MonoBehaviour
 
         GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
 
-        // for(int j = 0; j < playlist.Count; j++)
-        //  {
-
         for (int i = 0; i < plist.transform.childCount; i++)
         {
             Dropdown.OptionData opcao1 = new Dropdown.OptionData();
             GameObject p;
-            Citizen.player_info temp = new Citizen.player_info();
             Citizen s;
             p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
             s = p.GetComponent<Citizen>(); // player X's script
@@ -494,11 +482,6 @@ public class GameManager : MonoBehaviour
             }
             //s.ModelSwitch("Villager");
         }
-
-        // }
-
-
-
     }
 
     void startTurn(int trn) // começa o turno do player trn, aí dentro da função tem uma parte pra acso seja dia, e outra pra acso seja noite
@@ -516,7 +499,6 @@ public class GameManager : MonoBehaviour
 
                 if (night_count == 0)
                 {
-
                     GameObject plistt = GameObject.Find("PlayersList"); // lista de (parents) player
                     for (int i = 0; i < plistt.transform.childCount; i++)
                     {
@@ -526,19 +508,14 @@ public class GameManager : MonoBehaviour
                         p = plistt.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                         s = p.GetComponent<Citizen>(); // player X's script
                         s.resetInfo();
-
                     }
-
                 }
-
-                bool keepGo = false;
 
                 //night = true;
                 GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
                 for (int i = 0; i < plist.transform.childCount; i++) // começa a iterar pelos jogadores
                 {
                     GameObject p;
-                    Citizen.player_info temp = new Citizen.player_info();
                     Citizen s;
                     p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                     s = p.GetComponent<Citizen>(); // player X's script
@@ -561,10 +538,6 @@ public class GameManager : MonoBehaviour
 
                     if (p.name == nomee && s.alive == true) // se o jogador do for ali de cima, for == ao jogador da vez, é esse msm, continua lek!
                     {
-                        
-                      
-
-
                         whosturn = p.name + " Turn | " + s.identity;
                         Debug.Log("SETEI CURRENT PLAYER = " + p.name);
                         currentPlayerAtNight = p.gameObject; // atualiza o jogador da vez
@@ -604,15 +577,10 @@ public class GameManager : MonoBehaviour
                                     //  sl.canchange = false;
                                 }
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         if (day == true) // se for dia
@@ -628,13 +596,11 @@ public class GameManager : MonoBehaviour
                 //Debug.Log("Entrei turn");
                 playerOk = false;
 
-
                 //night = true;
                 GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
                 for (int i = 0; i < plist.transform.childCount; i++)
                 {
                     GameObject p;
-                    Citizen.player_info temp = new Citizen.player_info();
                     Citizen s;
                     p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                     s = p.GetComponent<Citizen>(); // player X's script
@@ -642,7 +608,6 @@ public class GameManager : MonoBehaviour
                     // Debug.Log(p.gameObject.name + s.identity + " info count: " + s.players_info.Count);
                     //jojo????????????????????????????????????????????????????????????????????????????
                     //Citizen shold = new Citizen();
-
 
                     if (s.alive == false) continue;
 
@@ -657,8 +622,6 @@ public class GameManager : MonoBehaviour
 
                     if (p.name == nomee && s.alive == true) // se o jogador do for ali de cima, for == ao jogador da vez, é esse msm, continua lek!
                     {
-                       
-
                         whosturn = p.name + " Turn | " + s.identity;
                         Debug.Log("SETEI CURRENT PLAYER = " + p.name);
                         currentPlayerAtNight = p.gameObject;
@@ -667,7 +630,6 @@ public class GameManager : MonoBehaviour
                         for (int j = 0; j < plist.transform.childCount; j++)
                         {
                             if (i == j) continue;
-
                             GameObject pl;
                             pl = plist.transform.GetChild(j).gameObject.transform.GetChild(0).gameObject; // current player Y
                             Citizen sl;
@@ -699,15 +661,10 @@ public class GameManager : MonoBehaviour
                                     //  sl.canchange = false;
                                 }
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
             // votacao do dia aqui ???????? (n lembro o pq dessa anotação, ignorem até eu lembrar)
         }
     }
@@ -716,13 +673,7 @@ public class GameManager : MonoBehaviour
     {
         night = true;
         day = false;
-
-        // TIMER: mostra na tela quem foi assassinado
-
         GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
-
-        // for(int j = 0; j < playlist.Count; j++)
-        //  {
 
         string killedByPeople = "";
         int votestemp = 0;
@@ -732,7 +683,6 @@ public class GameManager : MonoBehaviour
         {
             Dropdown.OptionData opcao1 = new Dropdown.OptionData();
             GameObject p;
-            Citizen.player_info temp = new Citizen.player_info();
             Citizen s;
             p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
             s = p.GetComponent<Citizen>(); // player X's script
@@ -752,7 +702,6 @@ public class GameManager : MonoBehaviour
         {
             Dropdown.OptionData opcao1 = new Dropdown.OptionData();
             GameObject p;
-            Citizen.player_info temp = new Citizen.player_info();
             Citizen s;
             p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
             s = p.GetComponent<Citizen>(); // player X's script
@@ -773,19 +722,15 @@ public class GameManager : MonoBehaviour
             {
                 Dropdown.OptionData opcao1 = new Dropdown.OptionData();
                 GameObject p;
-                Citizen.player_info temp = new Citizen.player_info();
                 Citizen s;
                 p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                 s = p.GetComponent<Citizen>(); // player X's script
                                                //s.resetInfo();
-                bool tru = true;
-                bool fal = false;
                 s.resetVotes(true, false);
                 //s.ModelSwitch("Villager");
             }
             //aqui mandamos um startDay passando true, pq o TIE = true (houve empate)
             startDay(true);
-
             return;
         }
 
@@ -808,10 +753,8 @@ public class GameManager : MonoBehaviour
             }
             //s.ModelSwitch("Villager");
         }
-
         //mostramos a mensagem de quem foi linchado
-        whoWasLynched = killedByPeople + " foi linchado";
-
+        whoWasLynched = killedByPeople + " foi linchado aos " + textTime + " minutos";
         //começamos o prox turno
         startTurn(player_turn);
     }
@@ -829,9 +772,6 @@ public class GameManager : MonoBehaviour
 
             GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
 
-            // for(int j = 0; j < playlist.Count; j++)
-            //  {
-
             string killedbywolf = "";
             int votestemp = 0;
 
@@ -841,7 +781,6 @@ public class GameManager : MonoBehaviour
             {
                 Dropdown.OptionData opcao1 = new Dropdown.OptionData();
                 GameObject p;
-                Citizen.player_info temp = new Citizen.player_info();
                 Citizen s;
                 p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                 s = p.GetComponent<Citizen>(); // player X's script
@@ -861,7 +800,6 @@ public class GameManager : MonoBehaviour
             {
                 Dropdown.OptionData opcao1 = new Dropdown.OptionData();
                 GameObject p;
-                Citizen.player_info temp = new Citizen.player_info();
                 Citizen s;
                 p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                 s = p.GetComponent<Citizen>(); // player X's script
@@ -878,13 +816,12 @@ public class GameManager : MonoBehaviour
             }
 
             //mostramos quem foi morto pelo lobo
-            whoWasKilledLastNight = killedbywolf + " foi assassinado pelos lobisomens";
-
+            whoWasKilledLastNight = killedbywolf + " foi assassinado pelos lobisomens aos " + textTime + " minutos";
         }
-
         //começa o proximo turno
         startTurn(player_turn);
     }
+
     void initGame() // aqui começamos as regras do jogo: criamos todas as classes necessarias e randomizamos players
     {
 
@@ -1048,20 +985,43 @@ public class GameManager : MonoBehaviour
 
     void OnGUI() // mostramos mensagens na tela
     {
-        GUI.Label(new Rect(10, 10, 300, 30), whosturn);
+        GUI.skin.font = font;
+        GUI.skin.label.fontSize = 16;
 
-        GUI.Label(new Rect(10, 40, 300, 30), whoWasKilledLastNight);
+        //Timer
+        ellapsedTime = Time.time - startTime;
+        int minutes = (int)ellapsedTime / 60;
+        int seconds = (int)ellapsedTime % 60;
 
-        GUI.Label(new Rect(10, 80, 300, 30), whoWasLynched);
+        textTime = string.Format("{0:00}:{1:00}", minutes, seconds);
+        GUI.Label(new Rect(Screen.width / 2 - 50, 10, 100, 40), textTime);
 
-        if(night)
+        //Other stuff
+        GUI.Label(new Rect(10, 10, 500, 40), whosturn);
+
+        GUI.Label(new Rect(10, 40, 900, 40), whoWasKilledLastNight);
+
+        GUI.Label(new Rect(10, 80, 500, 40), whoWasLynched);
+
+        if (isSeer)
         {
-            GUI.Label(new Rect(Screen.width / 2 - 50, 10, 100, 30), "Night");
+            GUI.Label(new Rect(10, 120, 900, 40), whoSeerSaw);
+            ellapsedTimeSeer = Time.time - startTimeSeer;
+
+            Debug.Log(ellapsedTimeSeer);
+            if (ellapsedTimeSeer > 5)
+            {
+                isSeer = false;
+            }
         }
-        else if(day)
+
+        if (night)
         {
-            GUI.Label(new Rect(Screen.width / 2 - 50, 30, 100, 30), "Day");
+            GUI.Label(new Rect(Screen.width / 2 - 50, 50, 100, 40), "Night");
+        }
+        else if (day)
+        {
+            GUI.Label(new Rect(Screen.width / 2 - 50, 50, 100, 40), "Day");
         }
     }
 }
-

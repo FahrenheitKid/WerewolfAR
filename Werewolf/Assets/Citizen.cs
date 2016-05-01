@@ -238,8 +238,6 @@ public class Citizen : MonoBehaviour
     }
     public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
-
-
         for (int j = 0; j < this.transform.childCount; j++)
         {
             if (this.transform.GetChild(j).gameObject.name == which)
@@ -263,9 +261,6 @@ public class Citizen : MonoBehaviour
 
             }
         }
-
-
-
     }
 
     void Update()
