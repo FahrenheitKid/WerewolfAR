@@ -247,7 +247,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (player_turn < n_players_alive - 1)
+        if (player_turn < n_players - 1)
         {
 
             Debug.Log("Player turno " + (player_turn + 1) + " apertou enter |" + n_players_alive);
@@ -283,6 +283,7 @@ public class GameManager : MonoBehaviour
         }
         else // se todos ja foram, vira dia ou noite
         {
+            Debug.Log("Player turno " + (player_turn + 1) + " apertou enter |" + n_players_alive);
             player_turn = 0;
             if (day == true && night == false)
             {
@@ -538,6 +539,7 @@ public class GameManager : MonoBehaviour
                     if(p.name == nomee && s.alive == false)
                     {
                         player_turn++;
+                        i = 0;
                         continue;
                     }
 
@@ -614,7 +616,7 @@ public class GameManager : MonoBehaviour
                     //jojo????????????????????????????????????????????????????????????????????????????
                     //Citizen shold = new Citizen();
 
-                    if (s.alive == false) continue;
+                    //if (s.alive == false) continue;
 
                     Debug.Log(p.name + "|" + s.identity);
 
@@ -622,6 +624,7 @@ public class GameManager : MonoBehaviour
                     if (p.name == nomee && s.alive == false)
                     {
                         player_turn++;
+                        i = 0;
                         continue;
                     }
 
@@ -660,7 +663,7 @@ public class GameManager : MonoBehaviour
                                 {
 
                                     string test = s.players_info[k].player_identity;
-                                    Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
+                                    //Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
 
                                     sl.ModelSwitch(test); // mudamos os modelos de acordo com cada um novamente
                                     //  sl.canchange = false;
@@ -676,6 +679,8 @@ public class GameManager : MonoBehaviour
 
     void startNight() // função que começa a noite e atualiza as coisas de acordo com as mudanças do dia
     {
+        Debug.Log("<color=orange>Comecou a noite </color>");
+
         night = true;
         day = false;
         GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
@@ -759,20 +764,21 @@ public class GameManager : MonoBehaviour
             //s.ModelSwitch("Villager");
         }
         //mostramos a mensagem de quem foi linchado
-        whoWasLynched = killedByPeople + " foi linchado aos " + textTime + " minutos";
+        whoWasLynched = killedByPeople + " foi linchado aos " + textTime + " min";
         //começamos o prox turno
         startTurn(player_turn);
     }
 
     void startDay(bool tie)
     {
-        Debug.Log(" Comecou dia");
+        
 
         night = false;
         day = true;
 
         if (tie == false) // se n houve empate faz o ciclo "normal"
         {
+            Debug.Log(" <color=orange>Comecou dia normal</color>");
             // TIMER: mostra na tela quem foi assassinado
 
             GameObject plist = GameObject.Find("PlayersList"); // lista de (parents) player
@@ -780,6 +786,8 @@ public class GameManager : MonoBehaviour
             string killedbywolf = "";
             int votestemp = 0;
 
+
+            Debug.Log("<color=green>Checando votos wolf</color>");
             //nesse for verificamos quem teve a maioria dos votos dos lobos para mata-lo
             // outras classes que matam jogador (em conjunto ou sozinho) verificam as coisas aqui tb (por enquanto só os lobos)
             for (int i = 0; i < plist.transform.childCount; i++)
@@ -821,8 +829,10 @@ public class GameManager : MonoBehaviour
             }
 
             //mostramos quem foi morto pelo lobo
-            whoWasKilledLastNight = killedbywolf + " foi assassinado pelos lobisomens aos " + textTime + " minutos";
+            whoWasKilledLastNight = killedbywolf + " foi assassinado pelos wolf aos " + textTime + " min";
         }
+
+        Debug.Log(" tie =" + tie);
         //começa o proximo turno
         startTurn(player_turn);
     }
@@ -1018,7 +1028,7 @@ public class GameManager : MonoBehaviour
 
             GUI.Label(new Rect(500, 10, 100, 40), textTime);
 
-            if (ellapsedTimeNextPlayer > 6)
+            if (ellapsedTimeNextPlayer > 0)
             {
                 startTurn(player_turn);
                 isNextPlayer = false;
@@ -1034,7 +1044,7 @@ public class GameManager : MonoBehaviour
             GUI.Label(new Rect(10, 120, 900, 40), whoSeerSaw);
             ellapsedTimeSeer = Time.time - startTimeSeer;
 
-            Debug.Log(ellapsedTimeSeer);
+          //  Debug.Log(ellapsedTimeSeer);
             if (ellapsedTimeSeer > 5)
             {
                 isSeer = false;
