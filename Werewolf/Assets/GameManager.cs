@@ -577,21 +577,21 @@ public class GameManager : MonoBehaviour
                            // if (!sl.alive) continue; // se n tiver vivo pula
 
                             // Debug.Log(" b4 " + p.gameObject.name + " info count" + s.players_info.Count);
-                            for (int z = 0; z < sl.players_info.Count; z++)
+                            for (int z = 0; z < s.players_info.Count; z++)
                             {
                                 // Debug.Log(p.gameObject.name + " info " + z + ": Nome= " + s.players_info[z].player_name + " id=" + s.players_info[z].player_identity);
 
                             }
 
-                            for (int k = 0; k < sl.players_info.Count; k++)
+                            for (int k = 0; k < s.players_info.Count; k++)
                             {
                                 //Debug.Log(" sao iguais? " + s.players_info[k].player_name + "|" + pl.gameObject.name);
-                                if (sl.players_info[k].player_name == pl.gameObject.name) 
+                                if (s.players_info[k].player_name == pl.gameObject.name) 
                                 {
                                    
-                                    string test = sl.players_info[k].player_identity; // aqui guardamos como o jogador da vez deve enxergar o outro jogador
+                                    string test = s.players_info[k].player_identity; // aqui guardamos como o jogador da vez deve enxergar o outro jogador
                                                                                      // Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
-                                    if (sl.identity == "Seer")
+                                    if (s.identity == "Seer")
                                     {
                                         Debug.Log("<color=pink>Seer ta vendo </color>" + s.players_info[k].player_name + "como " + test);
                                     }

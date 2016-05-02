@@ -182,6 +182,7 @@ public class Citizen : MonoBehaviour
 
         GameObject plist = GameObject.Find("PlayersList");
 
+        players_info.Clear();
         //  Debug.Log("Sou " + identity + "iplist count: " + plist.transform.childCount);
         for (int i = 0; i < plist.transform.childCount; i++)
         {
