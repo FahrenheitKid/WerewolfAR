@@ -756,7 +756,7 @@ public class GameManager : MonoBehaviour
             p = plist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
             s = p.GetComponent<Citizen>(); // player X's script
                                            //s.resetInfo();
-
+            s.resetVotes(false, true);
             if (p.name == killedByPeople)
             {
                 s.alive = false;
@@ -764,6 +764,7 @@ public class GameManager : MonoBehaviour
 
             }
             //s.ModelSwitch("Villager");
+
         }
         //mostramos a mensagem de quem foi linchado
         whoWasLynched = killedByPeople + " foi linchado aos " + textTime + " min";
@@ -835,6 +836,22 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log(" tie =" + tie);
+
+        GameObject pplist = GameObject.Find("PlayersList"); // lista de (parents) player
+        for (int i = 0; i < pplist.transform.childCount; i++)
+        {
+            Dropdown.OptionData opcao1 = new Dropdown.OptionData();
+            GameObject p;
+            Citizen s;
+            p = pplist.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
+            s = p.GetComponent<Citizen>(); // player X's script
+                                           //s.resetInfo();
+
+            s.resetVotes(true, true);
+            //s.ModelSwitch("Villager");
+        }
+
+
         //começa o proximo turno
         startTurn(player_turn);
     }
