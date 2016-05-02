@@ -549,6 +549,7 @@ public class GameManager : MonoBehaviour
                         Debug.Log("SETEI CURRENT PLAYER = " + p.name);
                         currentPlayerAtNight = p.gameObject; // atualiza o jogador da vez
                         initMenu(s.identity); // cria menu pro turno desse player
+                        s.ModelSwitch(s.identity);
 
                         for (int j = 0; j < plist.transform.childCount; j++) // nesse for passamos por todos os outros jogadores e atualizamos o que o jogador da vez deve enxergar de acordo com as informações q ele tem
                         {
@@ -559,9 +560,9 @@ public class GameManager : MonoBehaviour
                             Citizen sl;
                             sl = pl.GetComponent<Citizen>(); // player y's script
 
-                            if (pl.name == p.name) continue; // se for ele msm pula
+                            //if (pl.name == p.name) continue; // se for ele msm pula
 
-                            if (!sl.alive) continue; // se n tiver vivo pula
+                           // if (!sl.alive) continue; // se n tiver vivo pula
 
                             // Debug.Log(" b4 " + p.gameObject.name + " info count" + s.players_info.Count);
                             for (int z = 0; z < s.players_info.Count; z++)
@@ -634,6 +635,7 @@ public class GameManager : MonoBehaviour
                         Debug.Log("SETEI CURRENT PLAYER = " + p.name);
                         currentPlayerAtNight = p.gameObject;
                         initMenu(s.identity); // cria menu pro turno desse player
+                        s.ModelSwitch(s.identity);
 
                         for (int j = 0; j < plist.transform.childCount; j++)
                         {
@@ -643,9 +645,9 @@ public class GameManager : MonoBehaviour
                             Citizen sl;
                             sl = pl.GetComponent<Citizen>(); // player y's script
 
-                            if (pl.name == p.name) continue;
+                           // if (pl.name == p.name) continue;
 
-                            if (!sl.alive) continue;
+                            //if (!sl.alive) continue;
 
                             // Debug.Log(" b4 " + p.gameObject.name + " info count" + s.players_info.Count);
                             /*
