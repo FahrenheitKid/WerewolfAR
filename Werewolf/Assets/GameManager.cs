@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
         list[indexB] = tmp;
     }
 
+    public static string whoWon = "Villagers win";
+
     public Font font;
     private float startTime = 0;
     private float ellapsedTime = 0;
@@ -150,11 +152,15 @@ public class GameManager : MonoBehaviour
         {
             // sem werewolves, a vila venceu!
             Debug.Log("VILLAGERS WIN!");
+            whoWon = "VILLAGERS WIN";
+            Application.LoadLevel(2);
         }
         else if (teamV < teamW)
         {
             // werewolves outnumbered villagers, werewolves vecem!
             Debug.Log("WEREWOLVES WIN!");
+            whoWon = "WEREWOLVES WIN";
+            Application.LoadLevel(2);
         }
 
         int tempi = 0;
@@ -571,21 +577,21 @@ public class GameManager : MonoBehaviour
                            // if (!sl.alive) continue; // se n tiver vivo pula
 
                             // Debug.Log(" b4 " + p.gameObject.name + " info count" + s.players_info.Count);
-                            for (int z = 0; z < s.players_info.Count; z++)
+                            for (int z = 0; z < sl.players_info.Count; z++)
                             {
                                 // Debug.Log(p.gameObject.name + " info " + z + ": Nome= " + s.players_info[z].player_name + " id=" + s.players_info[z].player_identity);
 
                             }
 
-                            for (int k = 0; k < s.players_info.Count; k++)
+                            for (int k = 0; k < sl.players_info.Count; k++)
                             {
                                 //Debug.Log(" sao iguais? " + s.players_info[k].player_name + "|" + pl.gameObject.name);
-                                if (s.players_info[k].player_name == pl.gameObject.name) 
+                                if (sl.players_info[k].player_name == pl.gameObject.name) 
                                 {
                                    
-                                    string test = s.players_info[k].player_identity; // aqui guardamos como o jogador da vez deve enxergar o outro jogador
+                                    string test = sl.players_info[k].player_identity; // aqui guardamos como o jogador da vez deve enxergar o outro jogador
                                                                                      // Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
-                                    if (s.identity == "Seer")
+                                    if (sl.identity == "Seer")
                                     {
                                         Debug.Log("<color=pink>Seer ta vendo </color>" + s.players_info[k].player_name + "como " + test);
                                     }
