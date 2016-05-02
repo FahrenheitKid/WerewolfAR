@@ -211,6 +211,10 @@ public class GameManager : MonoBehaviour
 
                     string trueident;
 
+                    Citizen s = currentPlayerAtNight.GetComponent<Citizen>();
+
+
+                    
                     trueident = currentPlayerTargetAtNight.GetComponent<Citizen>().identity;
                     // mostrar na tela trueident
 
@@ -224,6 +228,23 @@ public class GameManager : MonoBehaviour
                     startTimeSeer = Time.time;
 
                     currentPlayerTargetAtNight.GetComponent<Citizen>().ModelSwitch("Villager");
+
+                    for (int k = 0; k < s.players_info.Count; k++)
+                    {
+                        //Debug.Log(" sao iguais? " + s.players_info[k].player_name + "|" + pl.gameObject.name);
+                        if (s.players_info[k].player_name == currentPlayerTargetAtNight.gameObject.name)
+                        {
+                            Debug.Log(currentPlayerTargetAtNight.GetComponent<Citizen>().identity);
+                           Citizen.player_info tempInfo = new Citizen.player_info();
+                            tempInfo = s.players_info[k];
+
+                            tempInfo.setIden(currentPlayerTargetAtNight.GetComponent<Citizen>().identity); // atualizamos a info da seer, agora ela sabe a identidade desse player
+
+                            s.players_info[k] = tempInfo;
+
+                            Debug.Log("<color=blue>Setando seer info:</color> " + s.players_info[k].player_name + " agora eh= " + s.players_info[k].player_identity);
+                        }
+                    }
 
                     break;
 
@@ -271,8 +292,8 @@ public class GameManager : MonoBehaviour
 
                 if (p.name == temp && s.alive == false)
                 {
-                    player_turn++;
-                    break;
+                   // player_turn++;
+                   // break;
                 }
             }
 
@@ -515,6 +536,8 @@ public class GameManager : MonoBehaviour
                         s = p.GetComponent<Citizen>(); // player X's script
                         s.resetInfo();
                     }
+
+                    
                 }
 
                 //night = true;
@@ -576,10 +599,13 @@ public class GameManager : MonoBehaviour
                                 //Debug.Log(" sao iguais? " + s.players_info[k].player_name + "|" + pl.gameObject.name);
                                 if (s.players_info[k].player_name == pl.gameObject.name) 
                                 {
-
+                                   
                                     string test = s.players_info[k].player_identity; // aqui guardamos como o jogador da vez deve enxergar o outro jogador
-                                    // Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
-
+                                                                                     // Debug.Log(pl.gameObject.name + " deveria parecer um: " + s.players_info[k].player_identity);
+                                    if (s.identity == "Seer")
+                                    {
+                                        Debug.Log("<color=pink>Seer ta vendo </color>" + s.players_info[k].player_name + "como " + test);
+                                    }
 
                                     sl.ModelSwitch(test); // aqui que mudamos os modelos dos outros jogadores
                                     //  sl.canchange = false;
@@ -781,6 +807,7 @@ public class GameManager : MonoBehaviour
 
         if (tie == false) // se n houve empate faz o ciclo "normal"
         {
+            night_count++;
             Debug.Log(" <color=orange>Comecou dia normal</color>");
             // TIMER: mostra na tela quem foi assassinado
 

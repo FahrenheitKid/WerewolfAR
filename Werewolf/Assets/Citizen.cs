@@ -28,6 +28,13 @@ public class Citizen : MonoBehaviour
             player_name = name;
             player_identity = iden;
         }
+
+        public void setIden(string iden)
+        {
+            
+            player_identity = iden;
+        }
+
     };
 
     public List<player_info> players_info = new List<player_info>();
@@ -238,6 +245,11 @@ public class Citizen : MonoBehaviour
     }
     public void ModelSwitch(string which) // escreva o modelo que quer deixar ativo
     {
+
+        if(identity == "Werewolf")
+        {
+            Debug.Log("<color=red>Mudando modelo wolf para</color>" + which);
+        }
         for (int j = 0; j < this.transform.childCount; j++)
         {
             if (this.transform.GetChild(j).gameObject.name == which)
