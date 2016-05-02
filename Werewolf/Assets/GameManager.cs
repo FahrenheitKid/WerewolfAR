@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviour
     private float startTimeSeer = 0;
     private float ellapsedTimeSeer = 0;
 
+    private bool isNextPlayer = false;
+    private float startTimeNextPlayer = 0;
+    private float ellapsedTimeNextPlayer = 0;
+
     public struct counts // counts é uma struct pra usar num for na hora de carregar os players, pra saber quantos de cada classe ainda precisa adicinoar
     {
 
@@ -273,7 +277,9 @@ public class GameManager : MonoBehaviour
             }
 
             // aqui vamos pro proximo player vivo a jogar
-            startTurn(player_turn);
+            isNextPlayer = true;
+            startTimeNextPlayer = Time.time;
+            //startTurn(player_turn);
         }
         else // se todos ja foram, vira dia ou noite
         {
@@ -503,7 +509,6 @@ public class GameManager : MonoBehaviour
                     for (int i = 0; i < plistt.transform.childCount; i++)
                     {
                         GameObject p;
-                        Citizen.player_info temp = new Citizen.player_info();
                         Citizen s;
                         p = plistt.transform.GetChild(i).gameObject.transform.GetChild(0).gameObject; // current player X
                         s = p.GetComponent<Citizen>(); // player X's script
@@ -1002,6 +1007,27 @@ public class GameManager : MonoBehaviour
         GUI.Label(new Rect(10, 40, 900, 40), whoWasKilledLastNight);
 
         GUI.Label(new Rect(10, 80, 500, 40), whoWasLynched);
+
+        if(isNextPlayer)
+        {
+            ellapsedTimeNextPlayer = Time.time - startTimeNextPlayer;
+            minutes = (int)ellapsedTimeNextPlayer / 60;
+            seconds = (int)ellapsedTimeNextPlayer % 60;
+
+            textTime = string.Format("{0:00}:{1:00}", minutes, seconds);
+
+            GUI.Label(new Rect(500, 10, 100, 40), textTime);
+
+            if (ellapsedTimeNextPlayer > 6)
+            {
+                startTurn(player_turn);
+                isNextPlayer = false;
+            }
+        }
+        else if(GUI.Button(new Rect(Screen.width - 250, Screen.height - 85, 160, 30), "Ready"))
+        {
+            nextPlayer();
+        }
 
         if (isSeer)
         {
